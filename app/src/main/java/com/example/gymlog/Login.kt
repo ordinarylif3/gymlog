@@ -5,21 +5,26 @@ import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import kotlin.math.sign
+
 
 @Composable
 fun LoginScreen(navController: NavController){
-    val navController = rememberNavController()
+
 
     AndroidView(
         factory = { context ->
@@ -32,9 +37,13 @@ fun LoginScreen(navController: NavController){
                 Log.d("Debug", "button press")
                 val email = emailInput.text.toString()
                 val password = passwordInput.text.toString()
-                navController.navigate(R.id.signupFragment)
                 // Perform login logic with firebase here using the email and password values
 
+            }
+
+            val signupBtn = view.findViewById<Button>(R.id.signupbtn)
+            signupBtn.setOnClickListener {
+                navController.navigate(route = Screen.SignUp.route)
             }
 
             view
