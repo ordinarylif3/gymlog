@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:background="@drawable/headerbar"
+            android:elevation="1dp">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/outline_home_24"
+                android:elevation="1dp"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical">
+            </ImageView>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/outline_person_24"
+                android:elevation="1dp"
+                android:layout_gravity="center_vertical">
+            </ImageView>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/outline_groups_24"
+                android:elevation="1dp"
+                android:layout_gravity="center_vertical">
+            </ImageView>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/baseline_bar_chart_24"
+                android:elevation="1dp"
+                android:layout_gravity="center_vertical">
+            </ImageView>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="100dp"
+                android:background="@drawable/outline_notifications_active_24"
+                android:elevation="1dp"
+                android:layout_gravity="center_vertical">
+            </ImageView>
+
+        </LinearLayout>
+
+
+</LinearLayout>
