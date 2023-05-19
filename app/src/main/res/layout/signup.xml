@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -50,29 +49,31 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        app:boxStrokeColor="@color/white"
-      >
+        app:hintTextAppearance="@color/white"
+        app:boxStrokeColor="@color/white">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/create_fullname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:hint="Full Name"
             android:fontFamily="@font/century"
             android:textColorHint="@color/white">
-
         </com.google.android.material.textfield.TextInputEditText>
 
+
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        app:boxStrokeColor="@color/white"
         >
 
         <com.google.android.material.textfield.TextInputEditText
@@ -91,7 +92,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp">
+        android:layout_marginRight="15dp"
+        app:boxStrokeColor="@color/white"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/create_password"
@@ -99,7 +102,8 @@
             android:layout_height="wrap_content"
             android:hint="Password"
             android:fontFamily="@font/century"
-            android:textColorHint="@color/white">
+            android:textColorHint="@color/white"
+            android:inputType="textPassword">
 
         </com.google.android.material.textfield.TextInputEditText>
 
@@ -110,7 +114,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        app:boxStrokeColor="@color/white">
+        app:boxStrokeColor="@color/white"
+        app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/create_confirm"
@@ -118,7 +123,8 @@
             android:layout_height="wrap_content"
             android:hint="Confirm Password"
             android:fontFamily="@font/century"
-            android:textColorHint="@color/white">
+            android:textColorHint="@color/white"
+            android:inputType="textPassword">
 
         </com.google.android.material.textfield.TextInputEditText>
 
@@ -126,7 +132,7 @@
 
 
     <Button
-        android:id="@+id/signupbtn"
+        android:id="@+id/createBtn"
         android:layout_width="190dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

@@ -17,9 +17,28 @@ fun SetupNavGraph(
        ){
             LoginScreen(navController = navController)
        }
-
         composable(route = Screen.SignUp.route) {
-            SignUp()
+            SignUp(navController = navController)
+        }
+
+      composable(route = Screen.Home.route){
+          HomeScreen(navController = navController)
+      }
+        
+        composable(route = Screen.Profile.route){
+            ProfileScreen(navController = navController)
+        }
+
+        composable(route = Screen.Feed.route){
+            HomeScreen(navController = navController)
+        }
+
+        composable(route = Screen.Chart.route){
+            HomeScreen(navController = navController)
+        }
+
+        composable(route = Screen.Bell.route){
+            HomeScreen(navController = navController)
         }
 
     }

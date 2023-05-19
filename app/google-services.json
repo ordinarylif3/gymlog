@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "398988120358",
+    "project_id": "gymlog-dc75b",
+    "storage_bucket": "gymlog-dc75b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:398988120358:android:d90be848c7f70abe3371e7",
+        "android_client_info": {
+          "package_name": "com.example.gymlog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "398988120358-7m6lhfbnjofmc10r6vsu9pkj1omtmg4p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHFpvhEF_t_Tdd4fHzLbvdRCa1ssdQBG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "398988120358-7m6lhfbnjofmc10r6vsu9pkj1omtmg4p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
