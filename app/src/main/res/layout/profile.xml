@@ -61,17 +61,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:id="@+id/profilePicture"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/profile_pic">
-        </ImageView>
 
         <TextView
+            android:layout_marginTop="180dp"
             android:id="@+id/usernamePlaceHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -91,7 +83,7 @@
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/full_name"
+                android:id="@+id/profile_full_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
@@ -113,7 +105,7 @@
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email"
+                android:id="@+id/profile_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"

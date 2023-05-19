@@ -14,4 +14,6 @@
     <string name="email">Email</string>
     <string name="full_name">Full Name</string>
     <string name="placeholder">PlaceHolder</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save_profile">Save Profile</string>
 </resources>
