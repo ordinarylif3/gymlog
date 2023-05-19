@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,11 @@ fun SignUp(navController: NavController){
             val emailInput = view.findViewById<EditText>(R.id.create_email)
             val passInput = view.findViewById<EditText>(R.id.create_password)
             val confirmInput = view.findViewById<EditText>(R.id.create_confirm)
+
+            val backArrow = view.findViewById<ImageView>(R.id.backArrow)
+            backArrow.setOnClickListener {
+                navController.navigate(route = Screen.Login.route)
+            }
 
             val createBtn = view.findViewById<Button>(R.id.createBtn)
             createBtn.setOnClickListener {

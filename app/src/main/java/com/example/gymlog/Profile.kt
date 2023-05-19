@@ -1,13 +1,17 @@
 package com.example.gymlog
 
+import android.content.Intent
 import android.content.pm.ModuleInfo
 import android.net.Uri
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,11 +39,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 
 @Composable
 fun ProfileScreen(navController: NavController) {
 
+    val auth = FirebaseAuth.getInstance()
     val imageUriState = remember { mutableStateOf<Uri?>(null) }
 
     val usersRef = FirebaseDatabase.getInstance().reference.child("users")
@@ -49,9 +59,13 @@ fun ProfileScreen(navController: NavController) {
 
             AndroidView(factory = { context ->
                 val view = LayoutInflater.from(context).inflate(R.layout.profile, null)
-                val name = view.findViewById<EditText>(R.id.profile_full_name)
-                val email = view.findViewById<EditText>(R.id.profile_email)
-                val saveBtn = view.findViewById<EditText>(R.id.saveProfileBtn)
+
+                val signout = view.findViewById<TextView>(R.id.signOutBtn)
+                signout.setOnClickListener {
+                    auth.signOut()
+                    navController.navigate(route = Screen.Login.route)
+                }
+                //val saveBtn = view.findViewById<EditText>(R.id.saveProfileBtn)
 
 //                saveBtn.setOnClickListener {
 //                    if(name.toString().isNotEmpty() && email.toString().isNotEmpty()){
@@ -63,6 +77,26 @@ fun ProfileScreen(navController: NavController) {
 
             },
                 update = { view ->
+
+                    val fullname = view.findViewById<TextView>(R.id.usernamePlaceHolder)
+                    val currUser = auth.currentUser
+                    val query: Query = usersRef.orderByChild("email").equalTo(currUser?.email)
+
+                    query.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            for (snapshot in dataSnapshot.children) {
+                                val user: Users? = snapshot.getValue(Users::class.java)
+                                fullname.text = user?.fullname
+
+                                // Process the retrieved name
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // Handle error
+                        }
+                    })
+
                 }
             )
             CenterButton(onImageSelected = { imageUri ->
@@ -95,6 +129,11 @@ fun CircularButtonWithText(
             uri?.let { onImageSelected(it) }
         }
     )
+
+//    fun launchImagePicker(launcher: ActivityResultLauncher<Intent>) {
+//        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//        launcher.launch(intent)
+//    }
 
     Box(
         modifier = Modifier

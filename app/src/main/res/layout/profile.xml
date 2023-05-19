@@ -123,5 +123,20 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/signOutBtn"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out"
+        android:textColor="@color/gold"
+        android:fontFamily="@font/century"
+        >
+
+    </TextView>
+
+
+
 
 </LinearLayout>
