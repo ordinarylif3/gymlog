@@ -14,6 +14,7 @@
         android:background="@drawable/headerbar"
         android:elevation="1dp">
         <ImageView
+            android:id="@+id/homeBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@drawable/outline_home_24"
@@ -22,6 +23,7 @@
             android:layout_gravity="center_vertical">
         </ImageView>
         <ImageView
+            android:id="@+id/profileBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="30dp"
@@ -30,6 +32,7 @@
             android:layout_gravity="center_vertical">
         </ImageView>
         <ImageView
+            android:id="@+id/feedBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="30dp"
@@ -38,6 +41,7 @@
             android:layout_gravity="center_vertical">
         </ImageView>
         <ImageView
+            android:id="@+id/chartBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="30dp"
@@ -46,9 +50,10 @@
             android:layout_gravity="center_vertical">
         </ImageView>
         <ImageView
+            android:id="@+id/bellBtn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="100dp"
+            android:layout_marginStart="80dp"
             android:background="@drawable/outline_notifications_active_24"
             android:elevation="1dp"
             android:layout_gravity="center_vertical">

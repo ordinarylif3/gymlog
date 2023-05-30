@@ -17,7 +17,7 @@
                 android:layout_height="40dp"
                 android:background="@drawable/outline_home_24"
                 android:elevation="1dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_gravity="center_vertical">
             </ImageView>
             <ImageView
@@ -33,7 +33,7 @@
                 android:id="@+id/feedBtn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:background="@drawable/outline_groups_24"
                 android:elevation="1dp"
                 android:layout_gravity="center_vertical">
@@ -42,7 +42,7 @@
                 android:id="@+id/chartBtn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp"
                 android:background="@drawable/baseline_bar_chart_24"
                 android:elevation="1dp"
                 android:layout_gravity="center_vertical">
@@ -51,7 +51,7 @@
                 android:id="@+id/bellBtn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="100dp"
+                android:layout_marginStart="80dp"
                 android:background="@drawable/outline_notifications_active_24"
                 android:elevation="1dp"
                 android:layout_gravity="center_vertical">
