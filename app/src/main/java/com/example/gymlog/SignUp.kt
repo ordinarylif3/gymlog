@@ -67,26 +67,31 @@ fun SignUp(navController: NavController){
     var password by remember { mutableStateOf("") }
     var confirmPass by remember { mutableStateOf("") }
 
+    Column(modifier = Modifier
+        .background(Color.LightGray)) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        ) {
+            //backArrow(navController)
+            Image(
+                painter = painterResource(id = R.drawable.cornerpiece),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxSize()
+            )
+            backArrow(navController)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorResource(id = R.color.grey))
+                .background(Color.LightGray)
                 .padding(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                //backArrow(navController)
-                Image(
-                    painter = painterResource(id = R.drawable.cornerpiece),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.fillMaxSize()
-                )
-                backArrow(navController)
-            }
+
             Text(
                 text = "Create Account",
                 fontWeight = FontWeight.Bold,
@@ -135,7 +140,7 @@ fun SignUp(navController: NavController){
 
             OutlinedTextField(
                 value = confirmPass,
-                onValueChange = { value -> confirmPass = value},
+                onValueChange = { value -> confirmPass = value },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp),
@@ -146,63 +151,66 @@ fun SignUp(navController: NavController){
                 visualTransformation = PasswordVisualTransformation()
             )
 
-                Button( colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.gold)),
-                    onClick = {
-                        if(password == confirmPass) {
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // User creation successful
-                                val user = auth.currentUser
-                                navController.navigate(route = Screen.Home.route)
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.gold)),
+                onClick = {
+                    if (password == confirmPass) {
+                        auth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // User creation successful
+                                    val user = auth.currentUser
+                                    navController.navigate(route = Screen.Home.route)
 
-                                // Get the Firestore instance
-                                val db = FirebaseFirestore.getInstance()
+                                    // Get the Firestore instance
+                                    val db = FirebaseFirestore.getInstance()
 
-                                // Create a new user document
-                                val userData = hashMapOf(
-                                    "name" to name,
-                                    "email" to email
-                                )
+                                    // Create a new user document
+                                    val userData = hashMapOf(
+                                        "name" to name,
+                                        "email" to email
+                                    )
 
-                                // Set the user document in the "users" collection
-                                val userDocument = user?.let { it ->
-                                    db.collection("users").document(
-                                        it.uid)
+                                    // Set the user document in the "users" collection
+                                    val userDocument = user?.let { it ->
+                                        db.collection("users").document(
+                                            it.uid
+                                        )
+                                    }
+                                    if (userDocument != null) {
+                                        userDocument.set(userData)
+                                            .addOnSuccessListener {
+                                                // User document added successfully
+                                            }
+                                            .addOnFailureListener { e ->
+                                                // Error adding user document
+                                            }
+                                    }
+
+                                } else {
+                                    // User creation failed
+                                    val exception = task.exception
+                                    Log.d("Debug", exception.toString())
                                 }
-                                if (userDocument != null) {
-                                    userDocument.set(userData)
-                                        .addOnSuccessListener {
-                                            // User document added successfully
-                                        }
-                                        .addOnFailureListener { e ->
-                                            // Error adding user document
-                                        }
-                                }
-
-                            } else {
-                                // User creation failed
-                                val exception = task.exception
-                                Log.d("Debug", exception.toString())
                             }
-                        }
-                }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 40.dp),
-                    //colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-                    shape = RoundedCornerShape(50)
-                ) {
-                    Text(
-                        text = "Create Account",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        //style = MaterialTheme.typography.button
-                    )
-                }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 40.dp),
+                //colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                shape = RoundedCornerShape(50)
+            ) {
+                Text(
+                    text = "Create Account",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    //style = MaterialTheme.typography.button
+                )
+            }
 
         }
+    }
 
 }
 

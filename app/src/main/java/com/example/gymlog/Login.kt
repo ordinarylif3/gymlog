@@ -64,115 +64,120 @@ fun LoginScreen(navController: NavController){
     var password by remember { mutableStateOf("")}
     var isPasswordVisible by remember { mutableStateOf(false) }
 
+    Column(modifier = Modifier
+        .background(Color.LightGray)) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.grey)),
-        contentAlignment = Alignment.Center,
+        Image(
+            painter = painterResource(id = R.drawable.cornerpiece),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
 
-        ) {
 
-
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.cornerpiece),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            )
+                .background(Color.LightGray),
+            contentAlignment = Alignment.Center,
 
-            Text(
-                text = "Welcome!",
-                modifier = Modifier.padding(top = 20.dp),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 50.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.century))
-                )
-            )
+            ) {
 
-            OutlinedTextField(
-                value = email,
-                onValueChange = { value -> email = value },
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                label = { Text("Email") },
-                singleLine = true,
-                trailingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_person),
-                        contentDescription = null
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    text = "Welcome!",
+                    modifier = Modifier.padding(top = 20.dp),
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 50.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.century))
                     )
-                }
-            )
+                )
 
-            OutlinedTextField(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { value -> email = value },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    label = { Text("Email") },
+                    singleLine = true,
+                    trailingIcon = {
                         Icon(
-                            imageVector = if (isPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                            contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                            painter = painterResource(id = R.drawable.baseline_person),
+                            contentDescription = null
                         )
                     }
-                }
-            )
+                )
 
-            Text(
-                text = "Forgot Password",
-                modifier = Modifier
+                OutlinedTextField(modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { 
-
-                    }
                     .padding(top = 20.dp),
-                textAlign = TextAlign.End,
-                color = colorResource(id = R.color.gold),
-                style = TextStyle(fontWeight = FontWeight.Bold)
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 100.dp, bottom = 10.dp)
-                    .height(60.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                SignUpBtn (onClick ={
-                    navController.navigate(route = Screen.SignUp.route)
-                })
-
-                LoginBtn (onClick = {
-                    auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // Sign-in successful
-                                val user = auth.currentUser
-                                navController.navigate(route = Screen.Home.route)
-                            } else {
-                                // Sign-in failed
-                                val exception = task.exception
-                                Log.d("Debug", exception.toString())
-                            }
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password") },
+                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                            Icon(
+                                imageVector = if (isPasswordVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                                contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
+                            )
                         }
-                })
+                    }
+                )
+
+                Text(
+                    text = "Forgot Password",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+
+                        }
+                        .padding(top = 20.dp),
+                    textAlign = TextAlign.End,
+                    color = colorResource(id = R.color.gold),
+                    style = TextStyle(fontWeight = FontWeight.Bold)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp, bottom = 10.dp)
+                        .height(60.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    SignUpBtn(onClick = {
+                        navController.navigate(route = Screen.SignUp.route)
+                    })
+
+                    LoginBtn(onClick = {
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    // Sign-in successful
+                                    val user = auth.currentUser
+                                    navController.navigate(route = Screen.Home.route)
+                                } else {
+                                    // Sign-in failed
+                                    val exception = task.exception
+                                    Log.d("Debug", exception.toString())
+                                }
+                            }
+                    })
+                }
             }
         }
     }

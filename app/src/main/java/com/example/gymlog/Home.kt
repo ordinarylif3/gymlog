@@ -1,14 +1,22 @@
 package com.example.gymlog
 
+import WorkoutViewModel
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -16,6 +24,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,15 +38,25 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.gymlog.WorkoutModelSingleton.workoutModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.UUID
 
 @Composable
 fun HomeScreen(navController: NavController) {
+
+    val workoutInfoList by remember { mutableStateOf(mutableStateOf<List<WorkoutSession>>(emptyList())) }
 
     var showDialog by remember { mutableStateOf(false)}
     Column(
@@ -48,7 +68,7 @@ fun HomeScreen(navController: NavController) {
 
 
         AppScreen(navController = navController)
-        FeedBox()
+        FeedBox(workoutInfoList, navController)
 
         WorkoutButton(onClick = { showDialog = true })
 
@@ -59,9 +79,35 @@ fun HomeScreen(navController: NavController) {
         )
     }
 }
+@Composable
+fun PostBox(workoutInfo: WorkoutSession, navController: NavController) {
+
+    Column(
+        modifier = Modifier
+            .clickable {
+                workoutInfo.sessionID?.let { sessionID ->
+                    CoroutineScope(Dispatchers.Main).launch {
+                        navController.navigate("${Screen.WorkoutDetail.route}/$sessionID")
+                    }
+                }
+            }
+            .height(80.dp)
+            .fillMaxWidth()
+            .background(Color.DarkGray),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        workoutInfo.sessionName?.let { Text(text = it) }
+        workoutInfo.dateTime?.let { dateTime ->
+            Text(text = "Date: ${dateTime["first"]}")
+            Text(text = "Time: ${dateTime["second"]}")
+        }
+    }
+}
+
 
 @Composable
-fun FeedBox() {
+fun FeedBox(workoutInfoList: MutableState<List<WorkoutSession>>, navController: NavController) {
+
     Box(
         modifier = Modifier
             .size(width = 360.dp, height = 650.dp)
@@ -73,12 +119,76 @@ fun FeedBox() {
                 shape = RoundedCornerShape(16.dp)
             )
             .background(colorResource(R.color.lightGrey)),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
     ) {
-        // Content of the box, this is where I will query the data from firebase
-        // and add the fist bump
+
+        LaunchedEffect(Unit) {
+            val fetchedWorkoutInfoList = fetchAllSessions()
+            workoutInfoList.value = fetchedWorkoutInfoList
+        }
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .width(340.dp)
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.gold),
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .background(Color.Gray, shape = RoundedCornerShape(10.dp)),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            //query for all workout data
+            items(workoutInfoList.value) { workoutInfo ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    PostBox(workoutInfo, navController)
+                    Spacer(modifier = Modifier.height(15.dp))
+                }
+            }
+
+        }
     }
 }
+
+suspend fun fetchAllSessions(): List<WorkoutSession> {
+    val db = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
+    val sessions = mutableListOf<WorkoutSession>()
+
+    try {
+        val collectionRef = db.collection("users")
+            .document(auth.uid.toString())
+            .collection("workoutSession")
+            .orderBy("dateTime.first", Query.Direction.DESCENDING)
+
+        val querySnapshot = collectionRef.get().await()
+
+        for (documentSnapshot in querySnapshot.documents) {
+            val session = documentSnapshot.toObject(WorkoutSession::class.java)
+            session?.let {
+                val documentId = documentSnapshot.id
+                val sessionName = documentSnapshot.getString("sessionName")
+                val dateTimeMap = documentSnapshot["dateTime"] as? Map<String, String>
+                val workoutInfo = it.copy(
+                    sessionID = documentId,
+                    sessionName = sessionName,
+                    dateTime = dateTimeMap
+                )
+                sessions.add(workoutInfo)
+            }
+        }
+    } catch (e: Exception) {
+        // Handle error
+        Log.d("Debug", e.toString())
+    }
+
+    return sessions
+}
+
+
 @Composable
 fun WorkoutButton(onClick: ()-> Unit){
     Button(modifier = Modifier
@@ -139,14 +249,7 @@ fun WorkoutPopup(
                     )
 
                     SubmitButton(onClick = {
-                        //var workout = createWorkoutSession(textFieldValue.value)
-                        // Create a new workout document for the user
-                        //FirestoreRepository.addWorkoutSession(textFieldValue.value, getCurrentDateTime()) // Handle failure
-                        //FirestoreRepository.addWorkoutSession(workout) // Handle failure
-                        //Log.d("Debug", "submit button press")
-                        //val dateTimeInfo = Pair(workoutModel?.dataTime?.first.toString(),
-                          //  workoutModel?.dataTime?.second.toString())
-                        // Workout name added successfully
+
                         // initalize singleton class here to get sessionID
                         WorkoutModelSingleton.initializeWorkoutModel(
                             textFieldValue.value,

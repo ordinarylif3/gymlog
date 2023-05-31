@@ -1,4 +1,5 @@
 package com.example.gymlog
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -9,9 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,13 +22,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -52,6 +52,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -64,7 +67,7 @@ fun TrackingScreen(navController: NavController) {
     val db = FirebaseFirestore.getInstance()
 
     var exerciseList: List<String> by remember { mutableStateOf(emptyList()) }
-
+    val fieldDataListState = remember { mutableStateOf<List<DocumentData>>(emptyList()) }
 
     //query for exercise name
     LaunchedEffect(Unit) {
@@ -84,7 +87,7 @@ fun TrackingScreen(navController: NavController) {
     ) {
 
         AppScreen(navController = navController)
-        AddWorkoutBox(exerciseList)
+        AddWorkoutBox(exerciseList, fieldDataListState)
 
         CompleteWorkoutButton (onClick = {
             navController.navigate(route = Screen.Home.route)
@@ -131,27 +134,21 @@ fun CompleteWorkoutButton(onClick: () -> Unit) {
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
+@Preview
 @Composable
-fun AddWorkoutBox(exerciseList: List<String>) {
+fun WorkoutBoxPreview() {
+    AddWorkoutBox(exerciseList = listOf(), fieldDataListState =  mutableStateOf<List<DocumentData>>(emptyList()))
+}
+
+@Composable
+fun AddWorkoutBox(exerciseList: List<String>, fieldDataListState: MutableState<List<DocumentData>>) {
     var showAddDialog by remember { mutableStateOf(false)}
-
-    val workoutModel = WorkoutModelSingleton.workoutModel
-    val fieldDataListState = remember { mutableStateOf<List<DocumentData>>(emptyList()) }
-
-    //query for documentData
-    LaunchedEffect(Unit) {
-        try {
-            val fieldDataList = fetchDocuments(workoutModel?.sessionID.toString())
-            fieldDataListState.value = fieldDataList
-        } catch (e: Exception) {
-            // Handle any errors that occurred during the query
-        }
-    }
-
 
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .height(650.dp)
             .padding(top = 20.dp, bottom = 5.dp)
             .clip(RoundedCornerShape(16.dp))
             .border(
@@ -169,15 +166,22 @@ fun AddWorkoutBox(exerciseList: List<String>) {
             UserInfoDisplay(modifier = Modifier
                 .padding(top = 20.dp, bottom = 10.dp))
             LazyColumn(modifier = Modifier
+                .padding(top = 5.dp)
                 .border(width = 1.dp, color = colorResource(id = R.color.gold))
                 .background(Color.Gray),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 //query for all workout data
                 items(fieldDataListState.value) { fieldData ->
-                        Text(text = "Name: ${fieldData.name}")
-                        Text(text = "Reps: ${fieldData.reps}")
-                        Text(text = "Sets: ${fieldData.sets}")
-                        Text(text = "Weight: ${fieldData.weight}")
+                    Column(modifier = Modifier
+                        .padding(top = 2.dp, bottom = 2.dp)
+                        .width(250.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Name: ${fieldData.exerciseName}")
+                        Text(text = "Reps: ${fieldData.repValue}")
+                        Text(text = "Sets: ${fieldData.setValue}")
+                        Text(text = "Weight: ${fieldData.weightValue}")
+                    }
                 }
 
             }
@@ -187,7 +191,7 @@ fun AddWorkoutBox(exerciseList: List<String>) {
                 showAddDialog = showAddDialog,
                 onDismiss = { showAddDialog = false },
                 exerciseList,
-                navController = rememberNavController()
+                fieldDataListState
             )
 
 
@@ -208,7 +212,7 @@ fun AddWorkoutPopup(
     showAddDialog: Boolean,
     onDismiss: () -> Unit,
     exerciseList: List<String>,
-    navController: NavController
+    fieldDataListState: MutableState<List<DocumentData>>
 ) {
 
     var exerciseValue by remember { mutableStateOf("Select Exercise") }
@@ -239,7 +243,7 @@ fun AddWorkoutPopup(
 
                     ExerciseButton(label = exerciseValue, onClick =  {
                         isDropdownVisible = true
-                        Log.d("Debug", "Box pressed")
+                        // Log.d("Debug", "Box pressed")
                     })
 
                     if(isDropdownVisible){
@@ -252,7 +256,7 @@ fun AddWorkoutPopup(
                             offset = DpOffset(x = 50.dp, y = (-170).dp),
 
                         ) {
-                            Log.d("Debug", exerciseList[0])
+                            //Log.d("Debug", exerciseList[0])
                             LazyColumn(modifier = Modifier
                                 .border(width = 1.dp, color = colorResource(id = R.color.gold))
                                 .size(height = 300.dp, width = 200.dp)
@@ -300,14 +304,30 @@ fun AddWorkoutPopup(
                     }
 
                     AddWorkoutButton (onClick = {
+                        CoroutineScope(Dispatchers.Main).launch{
                         //Add firestore logic to add workout info to db
-                        Log.d("Debug","Add Workout pressed")
+                        //Log.d("Debug","Add Workout pressed")
                         val workoutModel = WorkoutModelSingleton.workoutModel
                         if (workoutModel != null) {
                             FirestoreRepository.addWorkoutRecord(workoutModel,exerciseValue, setValue, repValue, weightValue)
+                            try {
+                                //Log.d("Debug", workoutModel?.sessionID.toString())
+                                val fieldDataList = fetchDocuments(workoutModel?.sessionID.toString())
+                                fieldDataListState.value = fieldDataList
+//                                fieldDataListState.value.forEach { fieldData ->
+//                                    Log.d("Debug", "Name: ${fieldData.exerciseName}")
+//                                    Log.d("Debug", "Reps: ${fieldData.repValue}")
+//                                    Log.d("Debug", "Sets: ${fieldData.setValue}")
+//                                    Log.d("Debug", "Weight: ${fieldData.weightValue}")
+//                                }
+                                Log.d("Debug", fieldDataListState.value.size.toString())
+                            } catch (e: Exception) {
+                                // Handle any errors that occurred during the query
+                            }
                         }
-                        navController.navigate(route = Screen.Tracking.route)
-                    })
+                        onDismiss()
+                    }})
+
                }
             }
         }
@@ -416,18 +436,30 @@ fun TriangleShape(
 
 suspend fun fetchDocuments(sessionID: String): List<DocumentData> {
     val db = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
     val documents = mutableListOf<DocumentData>()
 
     try {
         val collectionRef = db.collection("users")
+            .document(auth.uid.toString())
+            .collection("workoutSession")
             .document(sessionID)
-            .collection("workoutCollection")
+            .collection("WorkoutCollection")
+        Log.d("Debug", collectionRef.toString())
         val querySnapshot = collectionRef.get().await()
 
         for (documentSnapshot in querySnapshot.documents) {
             val documentData = documentSnapshot.toObject(DocumentData::class.java)
             documentData?.let {
-                documents.add(it)
+//                val name = documentData.name
+//                val reps = documentData.reps
+//                val sets = documentData.sets
+//                val weight = documentData.weight
+//                // Use the retrieved fields as required
+//                // ...
+//                val document = DocumentData(name, reps, sets, weight)
+//                documents.add(document)
+              documents.add(it)
             }
         }
     } catch (e: Exception) {
@@ -438,28 +470,6 @@ suspend fun fetchDocuments(sessionID: String): List<DocumentData> {
 }
 
 
-@Composable
-fun UpdateWorkOutPage(){
-    val auth = FirebaseAuth.getInstance()
-    val db = Firebase.firestore
-    val workoutModel = WorkoutModelSingleton.workoutModel
-    val fieldDataListState = remember { mutableStateOf<List<DocumentData>>(emptyList()) }
-
-    LaunchedEffect(Unit) {
-        try {
-            val fieldDataList = fetchDocuments(workoutModel?.sessionID.toString())
-            fieldDataListState.value = fieldDataList
-        } catch (e: Exception) {
-            // Handle any errors that occurred during the query
-        }
-    }
-
-    // Use the fetched field data in your UI
-    for (fieldData in fieldDataListState.value) {
-        Text(text = fieldData.toString())
-    }
-
-}
 
 @Composable
 fun UserInfoDisplay(modifier: Modifier) {
@@ -503,8 +513,8 @@ fun UserInfoDisplay(modifier: Modifier) {
     LaunchedEffect(Unit){
         val workoutModel = WorkoutModelSingleton.workoutModel
 
-        Log.d("Debug", workoutModel?.sessionName.toString())
-        Log.d("Debug", workoutModel?.sessionID.toString())
+//        Log.d("Debug", workoutModel?.sessionName.toString())
+//        Log.d("Debug", workoutModel?.sessionID.toString())
         val workoutSessionRef = workoutModel?.sessionID?.let {
             collectionRef.document(it)
         }

@@ -9,4 +9,6 @@ sealed class Screen(val route : String){
     object Chart: Screen(route = "ChartScreen")
     object Bell: Screen(route = "NotificationScreen")
     object Tracking: Screen(route = "TrackingScreen")
+    object WorkoutDetail: Screen(route = "WorkoutDetail")
+
 }

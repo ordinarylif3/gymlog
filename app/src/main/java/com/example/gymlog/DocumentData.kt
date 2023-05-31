@@ -1,9 +1,11 @@
 package com.example.gymlog
 
+import com.google.firebase.firestore.PropertyName
+
 data class DocumentData(
-    val name: String? = null,
-    val reps: Number? = null,
-    val sets: Number? = null,
-    val weight: Number? = null
+    val exerciseName: String? = null,
+    val repValue: String? = null,
+    val setValue: String? = null,
+    val weightValue: String? = null
 )
 

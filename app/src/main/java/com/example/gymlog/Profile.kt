@@ -84,7 +84,7 @@ fun ProfileScreen(navController: NavController) {
 
             GetFullName()
 
-            
+            SignOutButton(navController)
 
             
         }
@@ -92,15 +92,20 @@ fun ProfileScreen(navController: NavController) {
     }
 }
 
-@Composable
-fun AddFriendsButton() {
-
-}
 
 @Composable
-fun ShowFriends() {
+fun SignOutButton(navController: NavController) {
+    val auth = FirebaseAuth.getInstance()
 
+    Button(onClick = {
+        auth.signOut()
+        navController.navigate(Screen.Login.route)
+    }) {
+        Text(text = "Sign Out")
+    }
 }
+
+
 
 @Composable
 fun GetFullName() {
